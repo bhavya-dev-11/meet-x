@@ -30,8 +30,8 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
     );
   }
@@ -50,18 +50,19 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        ),
         body: Container(
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.onboardBgStart,
-                AppColors.onboardBgMiddle,
-                AppColors.onboardBgEnd,
-              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.background, AppColors.backgroundLight],
             ),
           ),
           child: Stack(
@@ -78,25 +79,25 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
                       Text(
                         'Verify OTP',
                         style: AppTextStyles.headlineXL.copyWith(
-                          fontSize: 42,
+                          fontSize: 36,
                           fontWeight: FontWeight.w900,
                           foreground:
                               Paint()
                                 ..shader = const LinearGradient(
                                   colors: [
+                                    AppColors.textPrimary,
                                     AppColors.primary,
-                                    AppColors.primaryDark,
                                   ],
                                 ).createShader(
                                   const Rect.fromLTWH(0, 0, 300, 70),
                                 ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Text(
                         'Enter the 6-digit code sent to',
                         style: AppTextStyles.title.copyWith(
-                          color: AppColors.textMutedLight.withValues(alpha: 0.9),
+                          color: AppColors.textTertiary,
                           fontSize: 16,
                         ),
                       ),
@@ -130,7 +131,7 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
                                     AuthTextField(
                                       hint: 'Enter OTP',
                                       controller: controller.otpController,
-                                      isLightBackground: true,
+
                                       validator:
                                           (v) =>
                                               v!.trim().length != 6
@@ -206,9 +207,11 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
                                 colors:
                                     controller.isLoading
                                         ? [
-                                          AppColors.primary.withValues(alpha: 0.6),
-                                          AppColors.primaryDark.withValues(alpha: 
-                                            0.6,
+                                          AppColors.primary.withValues(
+                                            alpha: 0.6,
+                                          ),
+                                          AppColors.primaryDark.withValues(
+                                            alpha: 0.6,
                                           ),
                                         ]
                                         : [
@@ -259,8 +262,8 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
           (_, __) => Stack(
             children: [
               Positioned(
-                top: -80,
-                left: -80,
+                top: -100,
+                left: -100,
                 child: Container(
                   width: 300,
                   height: 300,
@@ -268,8 +271,8 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.primary.withValues(alpha: 
-                          0.18 + 0.05 * _glowController.value,
+                        AppColors.primary.withValues(
+                          alpha: 0.1 + 0.03 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
@@ -278,35 +281,20 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
                 ),
               ),
               Positioned(
-                bottom: -60,
-                right: -60,
+                bottom: -80,
+                right: -80,
                 child: Container(
-                  width: 260,
-                  height: 260,
+                  width: 280,
+                  height: 280,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.accent.withValues(alpha: 
-                          0.14 + 0.04 * _glowController.value,
+                        AppColors.accent.withValues(
+                          alpha: 0.06 + 0.02 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 180,
-                right: 40,
-                child: Transform.rotate(
-                  angle: 0.8,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
@@ -316,5 +304,3 @@ class _OtpViewState extends State<OtpView> with TickerProviderStateMixin {
     );
   }
 }
-
-

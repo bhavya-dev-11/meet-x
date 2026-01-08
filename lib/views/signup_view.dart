@@ -28,8 +28,8 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
     );
   }
@@ -43,28 +43,24 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // This is the golden pattern for any form screen in 2025
     return GestureDetector(
-      onTap:
-          () =>
-              FocusScope.of(
-                context,
-              ).unfocus(), // dismiss keyboard on tap outside
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        resizeToAvoidBottomInset: false, // Button stays at bottom
+        resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        ),
         body: Container(
-          height: MediaQuery.of(context).size.height, // Full height
+          height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.onboardBgStart,
-                AppColors.onboardBgMiddle,
-                AppColors.onboardBgEnd,
-              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.background, AppColors.backgroundLight],
             ),
           ),
           child: Stack(
@@ -87,8 +83,8 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                               Paint()
                                 ..shader = const LinearGradient(
                                   colors: [
+                                    AppColors.textPrimary,
                                     AppColors.primary,
-                                    AppColors.primaryDark,
                                   ],
                                 ).createShader(
                                   const Rect.fromLTWH(0, 0, 300, 70),
@@ -99,11 +95,11 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                       Text(
                         'Create your account',
                         style: AppTextStyles.title.copyWith(
-                          color: AppColors.textMutedLight.withValues(alpha: 0.9),
+                          color: AppColors.textTertiary,
                           fontSize: 15,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
 
                       // FORM FIELDS - Scrollable when keyboard appears
                       Expanded(
@@ -115,7 +111,6 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                                 AuthTextField(
                                   hint: 'Email address',
                                   controller: controller.emailController,
-                                  isLightBackground: true,
                                   validator:
                                       (v) =>
                                           v!.trim().isEmpty ? 'Required' : null,
@@ -125,7 +120,6 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                                   hint: 'Password',
                                   isPassword: true,
                                   controller: controller.passwordController,
-                                  isLightBackground: true,
                                   validator:
                                       (v) =>
                                           v!.length < 6
@@ -138,7 +132,6 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                                   isPassword: true,
                                   controller:
                                       controller.confirmPasswordController,
-                                  isLightBackground: true,
                                   validator:
                                       (v) => v!.length < 6 ? 'Required' : null,
                                 ),
@@ -155,7 +148,7 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                         children: [
                           SizedBox(
                             width: double.infinity,
-                            height: 50,
+                            height: 56,
                             child: ElevatedButton(
                               onPressed:
                                   controller.isLoading
@@ -165,22 +158,22 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
+                                  borderRadius: BorderRadius.circular(28),
                                 ),
                               ),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 400),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25),
+                                  borderRadius: BorderRadius.circular(28),
                                   gradient: LinearGradient(
                                     colors:
                                         controller.isLoading
                                             ? [
-                                              AppColors.primary.withValues(alpha: 
-                                                0.6,
+                                              AppColors.primary.withValues(
+                                                alpha: 0.6,
                                               ),
-                                              AppColors.primaryDark.withValues(alpha: 
-                                                0.6,
+                                              AppColors.primaryDark.withValues(
+                                                alpha: 0.6,
                                               ),
                                             ]
                                             : [
@@ -229,8 +222,7 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                                   TextSpan(
                                     text: 'Already have an account? ',
                                     style: TextStyle(
-                                      color: AppColors.textMutedLight
-                                          .withValues(alpha: 0.8),
+                                      color: AppColors.textTertiary,
                                     ),
                                   ),
                                   TextSpan(
@@ -266,8 +258,8 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
           (_, __) => Stack(
             children: [
               Positioned(
-                top: -80,
-                left: -80,
+                top: -100,
+                left: -100,
                 child: Container(
                   width: 300,
                   height: 300,
@@ -275,8 +267,8 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.primary.withValues(alpha: 
-                          0.18 + 0.05 * _glowController.value,
+                        AppColors.primary.withValues(
+                          alpha: 0.1 + 0.03 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
@@ -285,35 +277,20 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
                 ),
               ),
               Positioned(
-                bottom: -60,
-                right: -60,
+                bottom: -80,
+                right: -80,
                 child: Container(
-                  width: 260,
-                  height: 260,
+                  width: 280,
+                  height: 280,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.accent.withValues(alpha: 
-                          0.14 + 0.04 * _glowController.value,
+                        AppColors.accent.withValues(
+                          alpha: 0.06 + 0.02 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 180,
-                right: 40,
-                child: Transform.rotate(
-                  angle: 0.8,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
@@ -323,5 +300,3 @@ class _SignupViewState extends State<SignupView> with TickerProviderStateMixin {
     );
   }
 }
-
-

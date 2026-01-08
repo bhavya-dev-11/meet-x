@@ -7,8 +7,6 @@ class AuthTextField extends StatelessWidget {
   final bool isPassword;
   final TextEditingController controller;
   final String? Function(String?)? validator;
-  final bool
-  isLightBackground; // New: auto-detect or force light/dark mode style
   final TextInputType? keyboardType;
   final int? maxLines;
 
@@ -18,43 +16,37 @@ class AuthTextField extends StatelessWidget {
     required this.controller,
     this.isPassword = false,
     this.validator,
-    this.isLightBackground = false, // default = dark mode (main app)
     this.keyboardType,
     this.maxLines = 1,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final bool lightMode =
-        isLightBackground || Theme.of(context).brightness == Brightness.light;
-
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       obscureText: isPassword,
       validator: validator,
       maxLines: isPassword ? 1 : maxLines,
-      style: TextStyle(
-        fontSize: 17,
+      style: const TextStyle(
+        fontSize: 16,
         fontWeight: FontWeight.w500,
-        color: lightMode ? AppColors.textOnLight : AppColors.textPrimary,
+        color: AppColors.textPrimary,
+        fontFamily: 'Inter',
       ),
+      cursorColor: AppColors.primary,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(
-          color:
-              lightMode
-                  ? AppColors.textMutedLight.withValues(alpha: 0.7)
-                  : AppColors.textTertiary.withValues(alpha: 0.6),
+          color: AppColors.textMuted,
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
         ),
         filled: true,
-        fillColor:
-            lightMode
-                ? Colors.white.withValues(alpha: 0.78)
-                : AppColors.surfaceMuted.withValues(alpha: 0.6),
+        fillColor: AppColors.surfaceLight,
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 18,
+          vertical: 18,
+          horizontal: 20,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
@@ -62,29 +54,24 @@ class AuthTextField extends StatelessWidget {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
-          borderSide: BorderSide(
-            color:
-                lightMode
-                    ? Colors.white.withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.08),
+          borderSide: const BorderSide(
+            color: AppColors.surfaceBorder,
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2.5),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 2.5),
+          borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
       ),
     );
   }
 }
-
-

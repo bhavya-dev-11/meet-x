@@ -58,8 +58,8 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
     );
 
@@ -73,19 +73,15 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background,
         extendBodyBehindAppBar: true,
         appBar: _buildAppBar(recordingState),
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.onboardBgStart,
-                AppColors.onboardBgMiddle,
-                AppColors.onboardBgEnd,
-              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.background, AppColors.backgroundLight],
             ),
           ),
           child: Stack(
@@ -111,7 +107,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: AppColors.textOnLight),
+        icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         onPressed: () {
           if (state.status == RecordingStatus.recording ||
               state.status == RecordingStatus.paused) {
@@ -132,7 +128,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(
+                    color: AppColors.error.withValues(
                       alpha: 0.5 + 0.5 * _pulseController.value,
                     ),
                     shape: BoxShape.circle,
@@ -146,7 +142,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             child: Text(
               'Meeting: ${state.meetingWith ?? widget.meetingWith}',
               style: AppTextStyles.title.copyWith(
-                color: AppColors.textOnLight,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
               ),
@@ -166,8 +162,8 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
           (_, __) => Stack(
             children: [
               Positioned(
-                top: -80,
-                left: -80,
+                top: -100,
+                left: -100,
                 child: Container(
                   width: 300,
                   height: 300,
@@ -176,7 +172,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                     gradient: RadialGradient(
                       colors: [
                         AppColors.primary.withValues(
-                          alpha: 0.18 + 0.05 * _glowController.value,
+                          alpha: 0.1 + 0.03 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
@@ -185,17 +181,17 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                 ),
               ),
               Positioned(
-                bottom: -60,
-                right: -60,
+                bottom: -80,
+                right: -80,
                 child: Container(
-                  width: 260,
-                  height: 260,
+                  width: 280,
+                  height: 280,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
                         AppColors.accent.withValues(
-                          alpha: 0.14 + 0.04 * _glowController.value,
+                          alpha: 0.06 + 0.02 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
@@ -236,15 +232,9 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
           Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.7),
+              color: AppColors.surfaceLight,
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.15),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+              border: Border.all(color: AppColors.surfaceBorder, width: 1),
             ),
             child: const CircularProgressIndicator(
               color: AppColors.primary,
@@ -255,7 +245,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
           Text(
             'Preparing...',
             style: AppTextStyles.title.copyWith(
-              color: AppColors.textOnLight,
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -274,15 +264,9 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: AppColors.surfaceLight,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.15),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: const Icon(
                 Icons.mic_off,
@@ -294,7 +278,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Text(
               'Microphone Access Needed',
               style: AppTextStyles.headlineMd.copyWith(
-                color: AppColors.textOnLight,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
               textAlign: TextAlign.center,
@@ -304,7 +288,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
               state.errorMessage ??
                   'We need microphone access to record meetings',
               style: AppTextStyles.body.copyWith(
-                color: AppColors.textMutedLight,
+                color: AppColors.textTertiary,
                 fontSize: 15,
                 height: 1.5,
               ),
@@ -334,13 +318,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                     gradient: const LinearGradient(
                       colors: [AppColors.primary, AppColors.primaryDark],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                    boxShadow: [AppShadows.glow],
                   ),
                   child: Container(
                     alignment: Alignment.center,
@@ -372,7 +350,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
           style: AppTextStyles.headlineXL.copyWith(
             fontSize: 28,
             fontWeight: FontWeight.w900,
-            color: AppColors.textOnLight,
+            color: AppColors.textPrimary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -442,7 +420,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
               label: 'Stop',
               onTap: _showStopConfirmation,
               gradient: const LinearGradient(
-                colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                colors: [Color(0xFFFF6B8A), Color(0xFFE84A6F)],
               ),
             ),
           ],
@@ -468,15 +446,9 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: AppColors.surfaceLight,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.15),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: const Icon(
                 Icons.check_circle,
@@ -488,7 +460,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Text(
               'Recording Completed',
               style: AppTextStyles.headlineMd.copyWith(
-                color: AppColors.textOnLight,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
               textAlign: TextAlign.center,
@@ -497,7 +469,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Text(
               'Duration: ${state.formattedDuration}',
               style: AppTextStyles.body.copyWith(
-                color: AppColors.textMutedLight,
+                color: AppColors.textTertiary,
                 fontSize: 15,
               ),
               textAlign: TextAlign.center,
@@ -524,13 +496,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                     gradient: const LinearGradient(
                       colors: [AppColors.primary, AppColors.primaryDark],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                    boxShadow: [AppShadows.glow],
                   ),
                   child: Container(
                     alignment: Alignment.center,
@@ -561,15 +527,9 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: AppColors.surfaceLight,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.success.withValues(alpha: 0.15),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: const Icon(
                 Icons.cloud_done,
@@ -581,7 +541,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Text(
               'Processing Complete!',
               style: AppTextStyles.headlineMd.copyWith(
-                color: AppColors.textOnLight,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
               textAlign: TextAlign.center,
@@ -590,7 +550,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Text(
               'Your meeting summary is ready',
               style: AppTextStyles.body.copyWith(
-                color: AppColors.textMutedLight,
+                color: AppColors.textTertiary,
                 fontSize: 15,
               ),
               textAlign: TextAlign.center,
@@ -618,13 +578,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                     gradient: const LinearGradient(
                       colors: [AppColors.primary, AppColors.primaryDark],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                    boxShadow: [AppShadows.glow],
                   ),
                   child: Container(
                     alignment: Alignment.center,
@@ -655,15 +609,9 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: AppColors.surfaceLight,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.error.withValues(alpha: 0.15),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: const Icon(
                 Icons.error_outline,
@@ -675,7 +623,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Text(
               'Oops! Something Went Wrong',
               style: AppTextStyles.headlineMd.copyWith(
-                color: AppColors.textOnLight,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
               textAlign: TextAlign.center,
@@ -684,7 +632,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             Text(
               state.errorMessage ?? 'An unexpected error occurred',
               style: AppTextStyles.body.copyWith(
-                color: AppColors.textMutedLight,
+                color: AppColors.textTertiary,
                 fontSize: 15,
                 height: 1.5,
               ),
@@ -710,13 +658,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                     gradient: const LinearGradient(
                       colors: [AppColors.primary, AppColors.primaryDark],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                    boxShadow: [AppShadows.glow],
                   ),
                   child: Container(
                     alignment: Alignment.center,
@@ -748,7 +690,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             foreground:
                 Paint()
                   ..shader = const LinearGradient(
-                    colors: [AppColors.primary, AppColors.primaryDark],
+                    colors: [AppColors.textPrimary, AppColors.primary],
                   ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
           ),
         ),
@@ -756,8 +698,12 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
+            color: AppColors.primary.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
           child: Text(
             status,
@@ -887,7 +833,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
           Text(
             label,
             style: AppTextStyles.body.copyWith(
-              color: AppColors.textOnLight,
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
@@ -940,15 +886,9 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.7),
+              color: AppColors.surfaceLight,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              border: Border.all(color: AppColors.surfaceBorder, width: 1),
             ),
             child: Icon(icon, color: AppColors.primary, size: 28),
           ),
@@ -956,7 +896,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
           Text(
             label,
             style: AppTextStyles.caption.copyWith(
-              color: AppColors.textMutedLight,
+              color: AppColors.textTertiary,
               fontWeight: FontWeight.w600,
               fontSize: 12,
             ),
@@ -970,15 +910,15 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
     final isUploading = state.status == RecordingStatus.uploading;
 
     return Container(
-      color: Colors.black.withValues(alpha: 0.7),
+      color: Colors.black.withValues(alpha: 0.8),
       child: Center(
         child: Container(
           margin: const EdgeInsets.all(32),
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [AppShadows.lg],
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.surfaceBorder, width: 1),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1002,7 +942,7 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                     ? 'Uploading recording...'
                     : 'Processing summary...',
                 style: AppTextStyles.title.copyWith(
-                  color: AppColors.textOnLight,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                 ),
                 textAlign: TextAlign.center,
@@ -1012,14 +952,14 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
                 const SizedBox(height: 16),
                 LinearProgressIndicator(
                   value: state.uploadProgress,
-                  backgroundColor: AppColors.softGray,
+                  backgroundColor: AppColors.surfaceLight,
                   valueColor: const AlwaysStoppedAnimation(AppColors.primary),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '${(state.uploadProgress * 100).toInt()}%',
                   style: AppTextStyles.body.copyWith(
-                    color: AppColors.textMutedLight,
+                    color: AppColors.textTertiary,
                     fontSize: 14,
                   ),
                 ),
@@ -1044,53 +984,114 @@ class _RecordMeetingViewState extends ConsumerState<RecordMeetingView>
   }
 
   void _showStopConfirmation() {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text(
-              'Stop Recording?',
-              style: AppTextStyles.headlineMd.copyWith(
-                color: AppColors.textOnLight,
-                fontWeight: FontWeight.w800,
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+              border: Border(
+                top: BorderSide(color: AppColors.surfaceBorder, width: 1),
               ),
             ),
-            content: Text(
-              'Are you sure you want to stop this recording?',
-              style: AppTextStyles.body.copyWith(
-                color: AppColors.textMutedLight,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Cancel',
-                  style: AppTextStyles.button.copyWith(
-                    color: AppColors.textMutedLight,
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.textMuted,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  ref.read(recordingProvider.notifier).stopRecording();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 28),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.stop_circle_outlined,
+                      color: AppColors.error,
+                      size: 32,
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Stop',
-                  style: AppTextStyles.button.copyWith(color: Colors.white),
-                ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Stop Recording?',
+                    style: AppTextStyles.headlineMd.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Are you sure you want to stop this recording?',
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: AppColors.surfaceBorder,
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: AppTextStyles.button.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              ref
+                                  .read(recordingProvider.notifier)
+                                  .stopRecording();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.error,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: const Text('Stop'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ),
-            ],
+            ),
           ),
     );
   }

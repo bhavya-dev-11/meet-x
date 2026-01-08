@@ -33,8 +33,8 @@ class _DashboardViewState extends ConsumerState<DashboardView>
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
     );
   }
@@ -57,20 +57,16 @@ class _DashboardViewState extends ConsumerState<DashboardView>
     final dashboardState = ref.watch(dashboardControllerProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       floatingActionButton: _buildFAB(context),
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.onboardBgStart,
-              AppColors.onboardBgMiddle,
-              AppColors.onboardBgEnd,
-            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.background, AppColors.backgroundLight],
           ),
         ),
         child: Stack(
@@ -86,7 +82,7 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                             .refresh();
                       },
                       color: AppColors.primary,
-                      backgroundColor: Colors.white,
+                      backgroundColor: AppColors.surface,
                       child: CustomScrollView(
                         slivers: [
                           _buildHeader(state.userName),
@@ -118,7 +114,7 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                           Text(
                             'Something went wrong',
                             style: AppTextStyles.title.copyWith(
-                              color: AppColors.textOnLight,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -151,8 +147,8 @@ class _DashboardViewState extends ConsumerState<DashboardView>
           (_, __) => Stack(
             children: [
               Positioned(
-                top: -80,
-                left: -80,
+                top: -120,
+                left: -100,
                 child: Container(
                   width: 300,
                   height: 300,
@@ -160,8 +156,8 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.primary.withValues(alpha: 
-                          0.18 + 0.05 * _glowController.value,
+                        AppColors.primary.withValues(
+                          alpha: 0.08 + 0.03 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
@@ -170,35 +166,20 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                 ),
               ),
               Positioned(
-                bottom: -60,
-                right: -60,
+                bottom: -80,
+                right: -80,
                 child: Container(
-                  width: 260,
-                  height: 260,
+                  width: 280,
+                  height: 280,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.accent.withValues(alpha: 
-                          0.14 + 0.04 * _glowController.value,
+                        AppColors.accent.withValues(
+                          alpha: 0.06 + 0.02 * _glowController.value,
                         ),
                         Colors.transparent,
                       ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 200,
-                right: 30,
-                child: Transform.rotate(
-                  angle: 0.8,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
@@ -221,7 +202,7 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                   Text(
                     '${_getGreeting()},',
                     style: AppTextStyles.body.copyWith(
-                      color: AppColors.textMutedLight.withValues(alpha: 0.9),
+                      color: AppColors.textTertiary,
                       fontSize: 16,
                     ),
                   ),
@@ -235,8 +216,8 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                           Paint()
                             ..shader = const LinearGradient(
                               colors: [
-                                AppColors.primary,
-                                AppColors.primaryDark,
+                                AppColors.textPrimary,
+                                AppColors.textSecondary,
                               ],
                             ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
                     ),
@@ -247,20 +228,14 @@ class _DashboardViewState extends ConsumerState<DashboardView>
             // Logout Button
             Container(
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => _showLogoutDialog(context),
+                  onTap: () => _showLogoutBottomSheet(context),
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -279,50 +254,113 @@ class _DashboardViewState extends ConsumerState<DashboardView>
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
+  void _showLogoutBottomSheet(BuildContext context) {
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadii.lg),
-            ),
-            title: Text(
-              'Logout',
-              style: AppTextStyles.headlineMd.copyWith(
-                color: AppColors.textOnLight,
-                fontWeight: FontWeight.w700,
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+              border: Border(
+                top: BorderSide(color: AppColors.surfaceBorder, width: 1),
               ),
             ),
-            content: Text(
-              'Are you sure you want to logout?',
-              style: AppTextStyles.body.copyWith(
-                color: AppColors.textMutedLight,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: AppColors.textMutedLight),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await _handleLogout(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.sm),
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.textMuted,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                ),
-                child: const Text('Logout'),
+                  const SizedBox(height: 28),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.logout_rounded,
+                      color: AppColors.error,
+                      size: 32,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Logout',
+                    style: AppTextStyles.headlineMd.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Are you sure you want to logout?',
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: AppColors.surfaceBorder,
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: AppTextStyles.button.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _handleLogout(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.error,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: const Text('Logout'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ),
-            ],
+            ),
           ),
     );
   }
@@ -361,7 +399,7 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                 icon: Icons.qr_code_scanner_rounded,
                 label: 'Scan Card',
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF8156FF), Color(0xFF9D7EFF)],
+                  colors: [Color(0xFF8156FF), Color(0xFF6F41E8)],
                 ),
                 onTap: () {
                   Navigator.push(
@@ -379,13 +417,16 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                 icon: Icons.mic_rounded,
                 label: 'Record',
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFFF6B9D), Color(0xFFFF8FB3)],
+                  colors: [Color(0xFFFF6B8A), Color(0xFFE84A6F)],
                 ),
                 onTap: () async {
-                  final meetingWith = await showDialog<String>(
+                  final meetingWith = await showModalBottomSheet<String>(
                     context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
                     builder:
-                        (context) => const SelectMeetingParticipantDialog(),
+                        (context) =>
+                            const SelectMeetingParticipantBottomSheet(),
                   );
 
                   if (meetingWith != null && context.mounted) {
@@ -407,7 +448,7 @@ class _DashboardViewState extends ConsumerState<DashboardView>
                 icon: Icons.people_rounded,
                 label: 'My Leads',
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF00D4FF), Color(0xFF5BE9FF)],
+                  colors: [Color(0xFF00D9B5), Color(0xFF00B89C)],
                 ),
                 onTap: () {
                   // TODO: Navigate to leads
@@ -430,7 +471,7 @@ class _DashboardViewState extends ConsumerState<DashboardView>
             Text(
               'Recent Meetings',
               style: AppTextStyles.headlineMd.copyWith(
-                color: AppColors.textOnLight,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w800,
                 fontSize: 22,
               ),
@@ -470,20 +511,20 @@ class _DashboardViewState extends ConsumerState<DashboardView>
               Icon(
                 Icons.event_busy_rounded,
                 size: 64,
-                color: AppColors.textMutedLight.withValues(alpha: 0.5),
+                color: AppColors.textMuted,
               ),
               const SizedBox(height: 16),
               Text(
                 'No meetings yet',
                 style: AppTextStyles.title.copyWith(
-                  color: AppColors.textMutedLight,
+                  color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Tap + to create your first meeting',
                 style: AppTextStyles.caption.copyWith(
-                  color: AppColors.textMutedLight.withValues(alpha: 0.7),
+                  color: AppColors.textMuted,
                 ),
               ),
             ],
@@ -508,19 +549,21 @@ class _DashboardViewState extends ConsumerState<DashboardView>
 
   Widget _buildFAB(BuildContext context) {
     return Container(
-      width: 64,
-      height: 64,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [AppColors.primary, AppColors.primaryDark],
         ),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.4),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 4),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -528,9 +571,9 @@ class _DashboardViewState extends ConsumerState<DashboardView>
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showActionSheet(context),
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(20),
           child: const Center(
-            child: Icon(Icons.add, size: 28, color: Colors.white),
+            child: Icon(Icons.add_rounded, size: 30, color: Colors.white),
           ),
         ),
       ),
@@ -542,48 +585,56 @@ class _DashboardViewState extends ConsumerState<DashboardView>
       context: context,
       backgroundColor: Colors.transparent,
       builder:
-          (context) => Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
-              ),
-              boxShadow: [AppShadows.lg],
-            ),
-            child: SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 12),
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.textMutedLight.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(2),
+          (context) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceCard,
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(color: AppColors.surfaceBorder, width: 1),
+                  boxShadow: [AppShadows.lg],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 12),
+                    Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceBorder,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  _ActionSheetItem(
-                    icon: Icons.person_add_rounded,
-                    title: 'New Lead',
-                    subtitle: 'Add a new lead manually',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Navigate to new lead
-                    },
-                  ),
-                  _ActionSheetItem(
-                    icon: Icons.event_rounded,
-                    title: 'New Meeting',
-                    subtitle: 'Schedule a new meeting',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Navigate to new meeting
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    const SizedBox(height: 20),
+                    _ActionSheetItem(
+                      icon: Icons.person_add_rounded,
+                      title: 'New Lead',
+                      subtitle: 'Add a new lead manually',
+                      color: AppColors.accent,
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Navigate to new lead
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Divider(height: 1, color: AppColors.surfaceBorder),
+                    ),
+                    _ActionSheetItem(
+                      icon: Icons.mic_rounded,
+                      title: 'Record Meeting',
+                      subtitle: 'Start a new recording',
+                      color: AppColors.error,
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Record flow logic handled by QuickAction, but good to have here too
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
           ),
@@ -606,38 +657,59 @@ class _QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadii.md),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-          decoration: BoxDecoration(
-            gradient: gradient,
-            borderRadius: BorderRadius.circular(AppRadii.md),
-            boxShadow: [
-              BoxShadow(
-                color: gradient.colors.first.withValues(alpha: 0.25),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceCard,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppColors.surfaceBorder, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
-          child: Column(
-            children: [
-              Icon(icon, color: Colors.white, size: 32),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: AppTextStyles.caption.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12,
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(28),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: gradient,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: gradient.colors.first.withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 24),
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 10),
+                Text(
+                  label,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    letterSpacing: 0.2,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -651,9 +723,9 @@ class _MeetingCard extends StatelessWidget {
   const _MeetingCard({required this.meeting});
 
   Color _getScoreColor(double score) {
-    if (score >= 8.0) return const Color(0xFF10B981);
-    if (score >= 6.0) return const Color(0xFFF59E0B);
-    return const Color(0xFFEF4444);
+    if (score >= 8.0) return AppColors.success;
+    if (score >= 6.0) return AppColors.warning;
+    return AppColors.error;
   }
 
   @override
@@ -661,29 +733,25 @@ class _MeetingCard extends StatelessWidget {
     final scoreColor = _getScoreColor(meeting.score);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(AppRadii.md),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: AppColors.surfaceCard,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.surfaceBorder, width: 1),
       ),
       child: Row(
         children: [
           // Score Badge
           Container(
-            width: 60,
-            height: 60,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: scoreColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: scoreColor.withValues(alpha: 0.4), width: 2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: scoreColor.withValues(alpha: 0.3),
+                width: 2,
+              ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -693,21 +761,23 @@ class _MeetingCard extends StatelessWidget {
                   style: AppTextStyles.headlineMd.copyWith(
                     color: scoreColor,
                     fontWeight: FontWeight.w900,
-                    fontSize: 20,
+                    fontSize: 16,
+                    height: 1.1,
                   ),
                 ),
                 Text(
                   'Score',
                   style: AppTextStyles.caption.copyWith(
-                    color: scoreColor.withValues(alpha: 0.9),
-                    fontSize: 9,
+                    color: scoreColor.withValues(alpha: 0.8),
+                    fontSize: 8,
                     fontWeight: FontWeight.w700,
+                    height: 1.1,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           // Meeting Info
           Expanded(
             child: Column(
@@ -716,7 +786,7 @@ class _MeetingCard extends StatelessWidget {
                 Text(
                   meeting.title,
                   style: AppTextStyles.title.copyWith(
-                    color: AppColors.textOnLight,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
                   ),
@@ -730,13 +800,13 @@ class _MeetingCard extends StatelessWidget {
                       Icon(
                         Icons.person_outline_rounded,
                         size: 15,
-                        color: AppColors.textMutedLight,
+                        color: AppColors.textTertiary,
                       ),
                       const SizedBox(width: 5),
                       Text(
                         meeting.clientName!,
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.textMutedLight,
+                          color: AppColors.textSecondary,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -749,13 +819,13 @@ class _MeetingCard extends StatelessWidget {
                     Icon(
                       Icons.access_time_rounded,
                       size: 14,
-                      color: AppColors.textMutedLight.withValues(alpha: 0.8),
+                      color: AppColors.textMuted,
                     ),
                     const SizedBox(width: 5),
                     Text(
                       _formatDateTime(meeting.dateTime),
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textMutedLight.withValues(alpha: 0.8),
+                        color: AppColors.textMuted,
                         fontSize: 12,
                       ),
                     ),
@@ -764,14 +834,14 @@ class _MeetingCard extends StatelessWidget {
                       Icon(
                         Icons.location_on_outlined,
                         size: 14,
-                        color: AppColors.textMutedLight.withValues(alpha: 0.8),
+                        color: AppColors.textMuted,
                       ),
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
                           meeting.location!,
                           style: AppTextStyles.caption.copyWith(
-                            color: AppColors.textMutedLight.withValues(alpha: 0.8),
+                            color: AppColors.textMuted,
                             fontSize: 12,
                           ),
                           maxLines: 1,
@@ -787,7 +857,7 @@ class _MeetingCard extends StatelessWidget {
           // Arrow
           Icon(
             Icons.chevron_right_rounded,
-            color: AppColors.textMutedLight.withValues(alpha: 0.6),
+            color: AppColors.textMuted,
             size: 24,
           ),
         ],
@@ -815,12 +885,14 @@ class _ActionSheetItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final Color color;
   final VoidCallback onTap;
 
   const _ActionSheetItem({
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.color,
     required this.onTap,
   });
 
@@ -831,26 +903,21 @@ class _ActionSheetItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Row(
             children: [
               Container(
-                width: 52,
-                height: 52,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.primary, AppColors.primaryDark],
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.2),
+                    width: 1.5,
                   ),
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
                 ),
-                child: Icon(icon, color: Colors.white, size: 26),
+                child: Icon(icon, color: color, size: 22),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -860,26 +927,27 @@ class _ActionSheetItem extends StatelessWidget {
                     Text(
                       title,
                       style: AppTextStyles.title.copyWith(
-                        color: AppColors.textOnLight,
-                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textMutedLight,
+                        color: AppColors.textTertiary,
                         fontSize: 13,
+                        height: 1.3,
                       ),
                     ),
                   ],
                 ),
               ),
               Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: AppColors.textMutedLight.withValues(alpha: 0.5),
-                size: 16,
+                Icons.chevron_right_rounded,
+                color: AppColors.surfaceBorder,
+                size: 20,
               ),
             ],
           ),
@@ -888,5 +956,3 @@ class _ActionSheetItem extends StatelessWidget {
     );
   }
 }
-
-

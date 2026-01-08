@@ -16,6 +16,7 @@ class _OnboardingViewState extends State<OnboardingView>
   late OnboardingController _controller;
   late AnimationController _fadeController;
   late AnimationController _slideController;
+  late AnimationController _glowController;
 
   @override
   void initState() {
@@ -23,9 +24,17 @@ class _OnboardingViewState extends State<OnboardingView>
     _controller = OnboardingController();
 
     _fadeController = AnimationController(
-        duration: const Duration(milliseconds: 1400), vsync: this);
+      duration: const Duration(milliseconds: 1400),
+      vsync: this,
+    );
     _slideController = AnimationController(
-        duration: const Duration(milliseconds: 1600), vsync: this);
+      duration: const Duration(milliseconds: 1600),
+      vsync: this,
+    );
+    _glowController = AnimationController(
+      duration: const Duration(seconds: 4),
+      vsync: this,
+    )..repeat(reverse: true);
 
     _fadeController.forward();
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -37,82 +46,143 @@ class _OnboardingViewState extends State<OnboardingView>
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
+    _glowController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext) {
-    // Dark status bar icons on light pastel background
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,   // Android
-      statusBarBrightness: Brightness.light,      // iOS
-    ));
+  Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+    );
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.background,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              AppColors.onboardBgStart,   // #F5F3FF
-             
-              AppColors.onboardBgMiddle,  // #E0F2FE
-              AppColors.onboardBgEnd,     // #ECFDF5
+              AppColors.background,
+              AppColors.backgroundLight,
+              AppColors.surface,
             ],
             stops: [0.0, 0.5, 1.0],
           ),
         ),
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final screenWidth = MediaQuery.of(context).size.width;
-              final screenHeight = MediaQuery.of(context).size.height;
-              
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(height: 20),
-                    _buildIllustration(constraints, screenWidth, screenHeight),
-                    const SizedBox(height: 16),
-                    _buildHeadline(screenWidth),
-                    const SizedBox(height: 12),
-                    _buildSubtext(screenWidth),
-                    const SizedBox(height: 24),
-                    _buildActionButtons(),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              );
-            },
-          ),
+        child: Stack(
+          children: [
+            _buildFloatingShapes(),
+            SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  final screenHeight = MediaQuery.of(context).size.height;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildIllustration(
+                          constraints,
+                          screenWidth,
+                          screenHeight,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildHeadline(screenWidth),
+                        const SizedBox(height: 12),
+                        _buildSubtext(screenWidth),
+                        const SizedBox(height: 24),
+                        _buildActionButtons(),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildIllustration(BoxConstraints c, double screenWidth, double screenHeight) {
-    // Much smaller responsive sizing - 25% of screen height max
-    final illustrationHeight = (screenHeight * 0.25).clamp(160.0, 220.0);
+  Widget _buildFloatingShapes() {
+    return AnimatedBuilder(
+      animation: _glowController,
+      builder:
+          (_, __) => Stack(
+            children: [
+              Positioned(
+                top: -120,
+                left: -100,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.primary.withValues(
+                          alpha: 0.1 + 0.04 * _glowController.value,
+                        ),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -80,
+                right: -80,
+                child: Container(
+                  width: 280,
+                  height: 280,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.accent.withValues(
+                          alpha: 0.08 + 0.03 * _glowController.value,
+                        ),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildIllustration(
+    BoxConstraints c,
+    double screenWidth,
+    double screenHeight,
+  ) {
+    final illustrationHeight = (screenHeight * 0.28).clamp(180.0, 260.0);
     final blobSize1 = (illustrationHeight * 0.35).clamp(50.0, 80.0);
     final blobSize2 = (illustrationHeight * 0.27).clamp(40.0, 60.0);
-    final orbSize = (illustrationHeight * 0.65).clamp(100.0, 140.0);
-    final badgeSize = (illustrationHeight * 0.16).clamp(30.0, 40.0);
-    
+    final orbSize = (illustrationHeight * 0.65).clamp(100.0, 150.0);
+    final badgeSize = (illustrationHeight * 0.16).clamp(30.0, 44.0);
+
     return FadeTransition(
       opacity: _fadeController,
       child: SlideTransition(
         position: Tween<Offset>(
           begin: const Offset(0, -0.3),
           end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: _slideController,
-          curve: Curves.easeOutCubic,
-        )),
+        ).animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+        ),
         child: SizedBox(
           height: illustrationHeight,
           child: Stack(
@@ -126,10 +196,12 @@ class _OnboardingViewState extends State<OnboardingView>
                   width: blobSize1,
                   height: blobSize1,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                      AppColors.primary.withValues(alpha: 0.15),
-                      AppColors.primaryDark.withValues(alpha: 0.08),
-                    ]),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.2),
+                        AppColors.primaryDark.withValues(alpha: 0.1),
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(blobSize1 / 2),
                   ),
                 ),
@@ -142,10 +214,12 @@ class _OnboardingViewState extends State<OnboardingView>
                   width: blobSize2,
                   height: blobSize2,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                      AppColors.accent.withValues(alpha: 0.18),
-                      AppColors.accent.withValues(alpha: 0.08),
-                    ]),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.accent.withValues(alpha: 0.25),
+                        AppColors.accent.withValues(alpha: 0.1),
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(blobSize2 / 2),
                   ),
                 ),
@@ -157,15 +231,19 @@ class _OnboardingViewState extends State<OnboardingView>
                   width: orbSize,
                   height: orbSize,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Color(0xFFFFFBEB), Colors.white],
+                      colors: [AppColors.surfaceLight, AppColors.surface],
                     ),
                     borderRadius: BorderRadius.circular(orbSize / 2),
+                    border: Border.all(
+                      color: AppColors.surfaceBorder,
+                      width: 1,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.08),
+                        color: AppColors.primary.withValues(alpha: 0.15),
                         blurRadius: 40,
                         offset: const Offset(0, 20),
                       ),
@@ -181,7 +259,7 @@ class _OnboardingViewState extends State<OnboardingView>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.22),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             width: 2,
                           ),
                         ),
@@ -192,7 +270,7 @@ class _OnboardingViewState extends State<OnboardingView>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.28),
+                            color: AppColors.accent.withValues(alpha: 0.35),
                             width: 2,
                           ),
                         ),
@@ -203,19 +281,23 @@ class _OnboardingViewState extends State<OnboardingView>
                         width: orbSize * 0.3,
                         height: orbSize * 0.3,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: [AppColors.primary, AppColors.primaryDark],
                           ),
                           borderRadius: BorderRadius.circular(orbSize * 0.15),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.35),
+                              color: AppColors.primary.withValues(alpha: 0.4),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
                           ],
                         ),
-                        child: Icon(Icons.mic_rounded, color: Colors.white, size: orbSize * 0.16),
+                        child: Icon(
+                          Icons.mic_rounded,
+                          color: Colors.white,
+                          size: orbSize * 0.16,
+                        ),
                       ),
                     ],
                   ),
@@ -226,12 +308,20 @@ class _OnboardingViewState extends State<OnboardingView>
               Positioned(
                 bottom: illustrationHeight * 0.21,
                 left: 40,
-                child: _floatingBadge(Icons.lightbulb_rounded, AppColors.accent, badgeSize),
+                child: _floatingBadge(
+                  Icons.lightbulb_rounded,
+                  AppColors.accent,
+                  badgeSize,
+                ),
               ),
               Positioned(
                 bottom: illustrationHeight * 0.18,
                 right: 50,
-                child: _floatingBadge(Icons.auto_awesome_rounded, AppColors.primary, badgeSize),
+                child: _floatingBadge(
+                  Icons.auto_awesome_rounded,
+                  AppColors.primary,
+                  badgeSize,
+                ),
               ),
             ],
           ),
@@ -245,13 +335,11 @@ class _OnboardingViewState extends State<OnboardingView>
       width: size,
       height: size,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color.withValues(alpha: 0.92), color.withValues(alpha: 0.98)],
-        ),
+        gradient: LinearGradient(colors: [color.withValues(alpha: 0.9), color]),
         borderRadius: BorderRadius.circular(size / 2),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.3),
+            color: color.withValues(alpha: 0.4),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -263,11 +351,14 @@ class _OnboardingViewState extends State<OnboardingView>
 
   Widget _buildHeadline(double screenWidth) {
     final headlineFontSize = (screenWidth * 0.085).clamp(24.0, 36.0);
-    
+
     return FadeTransition(
       opacity: _fadeController,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.2),
+          end: Offset.zero,
+        ).animate(
           CurvedAnimation(
             parent: _slideController,
             curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
@@ -277,7 +368,7 @@ class _OnboardingViewState extends State<OnboardingView>
           'Understand your\nmeetings like\nnever before',
           textAlign: TextAlign.center,
           style: AppTextStyles.headlineXL.copyWith(
-            color: AppColors.textOnLight,
+            color: AppColors.textPrimary,
             fontSize: headlineFontSize,
             height: 1.15,
             letterSpacing: -0.6,
@@ -289,11 +380,14 @@ class _OnboardingViewState extends State<OnboardingView>
 
   Widget _buildSubtext(double screenWidth) {
     final subtextFontSize = (screenWidth * 0.038).clamp(13.0, 16.0);
-    
+
     return FadeTransition(
       opacity: _fadeController,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.2),
+          end: Offset.zero,
+        ).animate(
           CurvedAnimation(
             parent: _slideController,
             curve: const Interval(0.3, 1.0, curve: Curves.easeOutCubic),
@@ -307,7 +401,7 @@ class _OnboardingViewState extends State<OnboardingView>
             style: AppTextStyles.body.copyWith(
               fontSize: subtextFontSize,
               height: 1.55,
-              color: AppColors.textMutedLight,
+              color: AppColors.textTertiary,
             ),
           ),
         ),
@@ -319,7 +413,10 @@ class _OnboardingViewState extends State<OnboardingView>
     return FadeTransition(
       opacity: _fadeController,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.3),
+          end: Offset.zero,
+        ).animate(
           CurvedAnimation(
             parent: _slideController,
             curve: const Interval(0.5, 1.0, curve: Curves.easeOutCubic),
@@ -331,50 +428,65 @@ class _OnboardingViewState extends State<OnboardingView>
               width: double.infinity,
               height: 58,
               child: ElevatedButton(
-                onPressed: _controller.isLoading ? null : () => _controller.handleSignIn(context),
+                onPressed:
+                    _controller.isLoading
+                        ? null
+                        : () => _controller.handleSignIn(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(29)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(29),
+                  ),
                 ),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(29),
                     gradient: LinearGradient(
-                      colors: _controller.isLoading
-                          ? [AppColors.primary.withValues(alpha: 0.7), AppColors.primaryDark.withValues(alpha: 0.7)]
-                          : [AppColors.primary, AppColors.primaryDark],
+                      colors:
+                          _controller.isLoading
+                              ? [
+                                AppColors.primary.withValues(alpha: 0.7),
+                                AppColors.primaryDark.withValues(alpha: 0.7),
+                              ]
+                              : [AppColors.primary, AppColors.primaryDark],
                     ),
-                    boxShadow: _controller.isLoading
-                        ? []
-                        : [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.28),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
+                    boxShadow:
+                        _controller.isLoading
+                            ? []
+                            : [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.35,
+                                ),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
                   ),
                   child: Center(
-                    child: _controller.isLoading
-                        ? const SizedBox(
-                            width: 26,
-                            height: 26,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.8,
-                              valueColor: AlwaysStoppedAnimation(Colors.white),
+                    child:
+                        _controller.isLoading
+                            ? const SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.8,
+                                valueColor: AlwaysStoppedAnimation(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : const Text(
+                              'Get Started',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                letterSpacing: 0.2,
+                              ),
                             ),
-                          )
-                        : const Text(
-                            'Get Started',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
                   ),
                 ),
               ),
@@ -389,9 +501,9 @@ class _OnboardingViewState extends State<OnboardingView>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textMutedLight,
+                  color: AppColors.textSecondary,
                   decoration: TextDecoration.underline,
-                  decorationColor: AppColors.textMutedLight.withValues(alpha: 0.6),
+                  decorationColor: AppColors.textMuted,
                 ),
               ),
             ),
@@ -401,4 +513,3 @@ class _OnboardingViewState extends State<OnboardingView>
     );
   }
 }
-

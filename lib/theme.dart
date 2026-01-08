@@ -6,37 +6,39 @@ class AppColors {
   AppColors._();
 
   // ────── Core Brand Colors ──────
-  static const Color primary = Color(0xFF8156FF); // #8156FF
-  static const Color primaryDark = Color(
-    0xFF6F41E8,
-  ); // Slightly deeper variant for gradients
-  static const Color accent = Color(0xFFF1D16E); // #F1D16E – Warm gold accent
+  static const Color primary = Color(0xFF4F46E5); // Royal Indigo
+  static const Color primaryDark = Color(0xFF4338CA);
+  static const Color primaryLight = Color(0xFF818CF8);
+  static const Color accent = Color(0xFF00D9B5); // Teal accent for dark mode
+  static const Color accentGold = Color(0xFFF1D16E); // Secondary warm accent
 
-  // ────── Dark Mode Surfaces ──────
-  static const Color background = Color(0xFF192029); // #192029
-  static const Color surface = Color(0xFF0F1418); // #0F1418
-  static const Color surfaceVariant = Color(0xFF1E2529);
-  static const Color surfaceMuted = Color(0xFF252C34);
+  // ────── Dark Mode Surfaces (Refined) ──────
+  static const Color background = Color(0xFF0A0E14);
+  static const Color backgroundLight = Color(0xFF0F1419);
+  static const Color surface = Color(0xFF151B23);
+  static const Color surfaceLight = Color(0xFF1C242D);
+  static const Color surfaceCard = Color(0xFF1A222C);
+  static const Color surfaceBorder = Color(0xFF2A3441);
 
-  // ────── Light / Onboarding ──────
-  static const Color softGray = Color(0xFFECF0F1); // #ECF0F1
-  static const Color onboardBgStart = Color(0xFFF5F3FF);
-  static const Color onboardBgMiddle = Color(0xFFE0F2FE);
-  static const Color onboardBgEnd = Color(0xFFECFDF5);
-
-  // ────── Text Colors ──────
+  // ────── Text Colors (Dark Mode) ──────
   static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFCBD5DD);
-  static const Color textTertiary = Color(0xFF8F99A3);
-  static const Color textOnLight = Color(
-    0xFF111827,
-  ); // For onboarding headlines
-  static const Color textMutedLight = Color(0xFF6B7280);
+  static const Color textSecondary = Color(0xFFB4C1D0);
+  static const Color textTertiary = Color(0xFF7A8999);
+  static const Color textMuted = Color(0xFF5A6677);
 
   // ────── Feedback ──────
-  static const Color success = Color(0xFF34D399);
-  static const Color error = Color(0xFFFB7185);
+  static const Color success = Color(0xFF00D9B5);
+  static const Color error = Color(0xFFFF6B8A);
   static const Color warning = Color(0xFFFBBF24);
+  static const Color info = Color(0xFF5BA4FF);
+
+  // Legacy compatibility (used in some views)
+  static const Color onboardBgStart = Color(0xFF0A0E14);
+  static const Color onboardBgMiddle = Color(0xFF0F1419);
+  static const Color onboardBgEnd = Color(0xFF151B23);
+  static const Color softGray = Color(0xFF1C242D);
+  static const Color textOnLight = Color(0xFFFFFFFF);
+  static const Color textMutedLight = Color(0xFF7A8999);
 }
 
 class AppRadii {
@@ -53,7 +55,7 @@ class AppShadows {
   AppShadows._();
 
   static final BoxShadow sm = BoxShadow(
-    color: Colors.black.withValues(alpha: 0.1),
+    color: Colors.black.withValues(alpha: 0.25),
     blurRadius: 8,
     offset: const Offset(0, 2),
   );
@@ -65,15 +67,28 @@ class AppShadows {
   );
 
   static final BoxShadow glow = BoxShadow(
-    color: AppColors.primary.withValues(alpha: 0.25),
+    color: AppColors.primary.withValues(alpha: 0.35),
     blurRadius: 40,
     offset: const Offset(0, 12),
   );
 
   static final BoxShadow lg = BoxShadow(
-    color: Colors.black.withValues(alpha: 0.3),
+    color: Colors.black.withValues(alpha: 0.5),
     blurRadius: 32,
     offset: const Offset(0, 16),
+  );
+
+  // Dark mode specific - subtle glows
+  static final BoxShadow primaryGlow = BoxShadow(
+    color: AppColors.primary.withValues(alpha: 0.2),
+    blurRadius: 24,
+    spreadRadius: 0,
+  );
+
+  static final BoxShadow accentGlow = BoxShadow(
+    color: AppColors.accent.withValues(alpha: 0.15),
+    blurRadius: 20,
+    spreadRadius: 0,
   );
 }
 
@@ -125,7 +140,7 @@ class AppTextStyles {
   );
 }
 
-// ────── Final Theme (Dark-first) ──────
+// ────── Final Theme (Dark Professional) ──────
 final ThemeData appTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
@@ -134,12 +149,12 @@ final ThemeData appTheme = ThemeData(
   colorScheme: ColorScheme.dark(
     primary: AppColors.primary,
     secondary: AppColors.accent,
-    surface: AppColors.background,
+    surface: AppColors.surface,
     error: AppColors.error,
     onPrimary: Colors.white,
     onSecondary: AppColors.background,
     onSurface: AppColors.textPrimary,
-    surfaceContainerHighest: AppColors.surfaceVariant,
+    surfaceContainerHighest: AppColors.surfaceLight,
   ),
 
   scaffoldBackgroundColor: AppColors.background,
@@ -180,7 +195,7 @@ final ThemeData appTheme = ThemeData(
 
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: AppColors.surfaceMuted,
+    fillColor: AppColors.surfaceLight,
     contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadii.md),
@@ -188,13 +203,13 @@ final ThemeData appTheme = ThemeData(
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadii.md),
-      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+      borderSide: BorderSide(color: AppColors.surfaceBorder, width: 1),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadii.md),
       borderSide: const BorderSide(color: AppColors.primary, width: 2),
     ),
-    hintStyle: TextStyle(color: AppColors.textTertiary),
+    hintStyle: TextStyle(color: AppColors.textMuted),
   ),
 
   textTheme: TextTheme(
@@ -210,13 +225,30 @@ final ThemeData appTheme = ThemeData(
   ),
 
   cardTheme: CardThemeData(
-    color: AppColors.surfaceVariant,
+    color: AppColors.surfaceCard,
     elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadii.lg),
+      side: BorderSide(color: AppColors.surfaceBorder, width: 1),
+    ),
+  ),
+
+  bottomSheetTheme: BottomSheetThemeData(
+    backgroundColor: AppColors.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
+    dragHandleColor: AppColors.textMuted,
+    dragHandleSize: const Size(40, 4),
+  ),
+
+  dialogTheme: DialogThemeData(
+    backgroundColor: AppColors.surface,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppRadii.lg),
     ),
   ),
 
-  dividerColor: Colors.white.withValues(alpha: 0.08),
+  dividerColor: AppColors.surfaceBorder,
   iconTheme: const IconThemeData(color: AppColors.textSecondary),
 );

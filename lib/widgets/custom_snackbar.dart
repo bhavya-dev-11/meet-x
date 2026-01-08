@@ -7,7 +7,7 @@ class CustomSnackbar {
     _show(
       context,
       message,
-      backgroundColor: const Color(0xFF10B981), // Emerald 500
+      iconColor: AppColors.success,
       icon: Icons.check_circle_rounded,
     );
   }
@@ -16,7 +16,7 @@ class CustomSnackbar {
     _show(
       context,
       message,
-      backgroundColor: const Color(0xFFEF4444), // Red 500
+      iconColor: AppColors.error,
       icon: Icons.error_rounded,
     );
   }
@@ -25,7 +25,7 @@ class CustomSnackbar {
     _show(
       context,
       message,
-      backgroundColor: const Color(0xFF3B82F6), // Blue 500
+      iconColor: AppColors.info,
       icon: Icons.info_rounded,
     );
   }
@@ -33,7 +33,7 @@ class CustomSnackbar {
   static void _show(
     BuildContext context,
     String message, {
-    required Color backgroundColor,
+    required Color iconColor,
     required IconData icon,
   }) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -41,30 +41,41 @@ class CustomSnackbar {
       SnackBar(
         content: Row(
           children: [
-            Icon(icon, color: Colors.white, size: 24),
-            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 14),
             Expanded(
               child: Text(
                 message,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   fontFamily: 'Inter',
+                  height: 1.4,
                 ),
               ),
             ),
           ],
         ),
-        backgroundColor: backgroundColor,
+        backgroundColor: AppColors.surfaceCard,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.md),
+          side: const BorderSide(color: AppColors.surfaceBorder, width: 1),
+        ),
         margin: const EdgeInsets.all(16),
-        elevation: 4,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        elevation:
+            0, // Using manual shadow via container if needed, or flat for clean look
         duration: const Duration(seconds: 4),
       ),
     );
   }
 }
-
-
